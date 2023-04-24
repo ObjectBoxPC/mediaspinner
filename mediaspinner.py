@@ -112,12 +112,11 @@ def load_config(config_path):
     with open(config_path) as config_file:
         return json.load(config_file)
 
-if len(sys.argv) < 2:
-    print("Usage: {} [config file]".format(sys.argv[0]))
+if len(sys.argv) < 3:
+    print("Usage: {} [config file] [collections folder]".format(sys.argv[0]))
     sys.exit(1)
 
-collections_dir = "."
-collections = load_collections(collections_dir)
+collections = load_collections(sys.argv[2])
 config = load_config(sys.argv[1])
 file_selector = FileSelector(collections, config)
 player = Player()
