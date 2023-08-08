@@ -184,6 +184,7 @@ media_selector = MediaSelector(collections, config)
 server = Server(collections_dir, media_selector)
 
 try:
+    print("Starting server...open http://localhost:{}/".format(HTTP_SERVER_PORT))
     server.serve_forever()
 except KeyboardInterrupt:
     print("Exiting")
