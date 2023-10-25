@@ -144,10 +144,8 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
 
     def _split_path(self):
-        split_result = self.path.split("?", 1)
-        if len(split_result) < 2:
-            split_result.append("")
-        return tuple(split_result)
+        parse_result = urllib.parse.urlparse(self.path)
+        return (parse_result.path, parse_result.query)
 
     def _send_simple_response(self, code, content_type, body):
         self.send_response(code)
