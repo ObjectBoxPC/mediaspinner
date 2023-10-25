@@ -105,43 +105,51 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
         path, query_str = self._split_path()
+
         if path == "/":
             self._send_simple_response(http.HTTPStatus.OK, "text/html", INDEX_PAGE)
-        elif path == "/media":
+            return
+
+        if path == "/media":
             query = urllib.parse.parse_qs(query_str)
-            if "path" in query:
-                media_path = pathlib.Path(self.server.media_base_dir, query["path"][0])
-                if media_path.is_file():
-                    try:
-                        media_stat = media_path.stat()
-                        with media_path.open("rb") as media_file:
-                            self.send_response(http.HTTPStatus.OK)
-                            # TODO: Maybe try to guess the actual type
-                            self.send_header("Content-Type", "application/octet-stream")
-                            self.send_header("Content-Length", media_stat.st_size)
-                            self.end_headers()
-                            media_data = media_file.read(MEDIA_READ_SIZE)
-                            while len(media_data) > 0:
-                                self.wfile.write(media_data)
-                                media_data = media_file.read(MEDIA_READ_SIZE)
-                    except Exception as e:
-                        self._send_simple_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "application/octet-stream", b"")
-                        raise
-                else:
-                    self._send_simple_response(http.HTTPStatus.NOT_FOUND, "application/octet-stream", b"")
-            else:
+            if "path" not in query:
                 self._send_simple_response(http.HTTPStatus.BAD_REQUEST, "application/octet-stream", b"")
-        else:
-            self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
+                return
+
+            media_path = pathlib.Path(self.server.media_base_dir, query["path"][0])
+            if not media_path.is_file():
+                self._send_simple_response(http.HTTPStatus.NOT_FOUND, "application/octet-stream", b"")
+                return
+
+            try:
+                media_stat = media_path.stat()
+                with media_path.open("rb") as media_file:
+                    self.send_response(http.HTTPStatus.OK)
+                    # TODO: Maybe try to guess the actual type
+                    self.send_header("Content-Type", "application/octet-stream")
+                    self.send_header("Content-Length", media_stat.st_size)
+                    self.end_headers()
+                    media_data = media_file.read(MEDIA_READ_SIZE)
+                    while len(media_data) > 0:
+                        self.wfile.write(media_data)
+                        media_data = media_file.read(MEDIA_READ_SIZE)
+            except Exception as e:
+                self._send_simple_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "application/octet-stream", b"")
+                raise
+            return
+
+        self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
 
     def do_POST(self):
         path, query_str = self._split_path()
+
         if path == "/playlist/next":
             next_media = self.server.media_selector.select_media()
             response_obj = { "path": next_media }
             self._send_simple_response(http.HTTPStatus.OK, "application/json", json.dumps(response_obj))
-        else:
-            self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
+            return
+
+        self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
 
     def _split_path(self):
         parse_result = urllib.parse.urlparse(self.path)
