@@ -1,6 +1,6 @@
-# Mediaspinner
+# MediaSpinner
 
-Mediaspinner is a Python script for playing collections of media at random, which I originally created for playing music at parties.
+MediaSpinner is a Python script for playing collections of media at random, which I originally created for playing music at parties.
 
 It takes a folder of media along with a configuration file, and allows for playback through a simple Web page.
 
@@ -61,7 +61,7 @@ Load the Web page by opening: `http://localhost:8000/`
 
 ## API
 
-Mediaspinner exposes a simple API you can use rather than the one already provided.
+MediaSpinner exposes a simple API you can use rather than the one already provided.
 
 ### POST /playlist/next
 
@@ -91,4 +91,4 @@ Response body: Raw media file
 
 ## License
 
-Mediaspinner is available under the MIT License. Refer to `LICENSE.txt` for details.
+MediaSpinner is available under the MIT License. Refer to `LICENSE.txt` for details.
