@@ -4,6 +4,11 @@ Mediaspinner is a Python script for playing collections of media at random, whic
 
 It takes a folder of media along with a configuration file, and allows for playback through a simple Web page.
 
+## Requirements
+
+* Python 3.7
+* TCP port 8000 available on system (can be adjusted by editing the script)
+
 ## Setup
 
 ### Media Folder
@@ -49,8 +54,6 @@ The configuration file controls which collections are played and how media is se
 In the example, media from the first collection will be played about twice as often as media from the second collection. There will be at least three other items between items from the second collection, and at least ten between two instances of the same item.
 
 ## Usage
-
-Port 8000 must be available on your system (although this can be adjusted by editing the script).
 
 Start the Web server with: `python3 mediaspinner.py [configuration file] [media folder]`
 
