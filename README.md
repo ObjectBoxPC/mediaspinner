@@ -1,6 +1,6 @@
 # MediaSpinner
 
-MediaSpinner is a Python script for playing collections of media at random, which I originally created for playing music at parties.
+MediaSpinner is a Python script for playing collections of media at random, which was originally created for playing music at parties.
 
 It takes a folder of media along with a configuration file, and allows for playback through a simple Web page.
 
