@@ -40,7 +40,7 @@ INDEX_PAGE = """<!DOCTYPE html>
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', '/playlist/next');
                 xhr.addEventListener('load', function () {
-                    var responseObj = JSON.parse(xhr.response);
+                    var responseObj = JSON.parse(xhr.responseText);
                     player.src = '/media?path=' + encodeURIComponent(responseObj.path);
                     player.play();
                 });
