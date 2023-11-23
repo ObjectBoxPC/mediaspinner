@@ -33,7 +33,7 @@ INDEX_PAGE = """<!DOCTYPE html>
         </div>
         <p>Note: You may need to click to play the first time; afterwards playback should happen automatically.</p>
         <script>
-        (function (document) {
+        (function (document, XMLHttpRequest, JSON, encodeURIComponent) {
             var player = document.getElementById('player');
             var skipButton = document.getElementById('skip');
             function getNext() {
@@ -49,7 +49,7 @@ INDEX_PAGE = """<!DOCTYPE html>
             player.addEventListener('ended', getNext);
             skipButton.addEventListener('click', getNext);
             getNext();
-        })(document);
+        })(document, XMLHttpRequest, JSON, encodeURIComponent);
         </script>
     </body>
 </html>"""
