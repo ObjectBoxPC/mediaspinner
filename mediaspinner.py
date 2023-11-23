@@ -47,7 +47,7 @@ INDEX_PAGE = """<!DOCTYPE html>
                 xhr.send();
             }
             player.addEventListener('ended', getNext);
-            skip.addEventListener('click', getNext);
+            skipButton.addEventListener('click', getNext);
             getNext();
         })(document);
         </script>
