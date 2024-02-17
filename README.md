@@ -61,7 +61,7 @@ Load the Web page by opening: `http://localhost:8000/`
 
 ## API
 
-MediaSpinner exposes a simple API you can use rather than the one already provided.
+MediaSpinner exposes a simple API you can use to build your own UI instead of using the one already provided.
 
 ### POST /playlist/next
 
