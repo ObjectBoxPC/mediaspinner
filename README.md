@@ -48,8 +48,8 @@ The configuration file controls which collections are played and how media is se
 
 * `collections`: Settings for each collection
 	* `weight`: How likely an item is selected from this collection, relative to the other collections (default: 1)
-	* `backoff`: How many items to wait before another item is played from the same collection (default: 0, max: 10)
-* `same_media_backoff`: How many items to wait before the same item is played again (default: 0, max: 10)
+	* `backoff`: How many items to wait before another item is played from the same collection (default: 0)
+* `same_media_backoff`: How many items to wait before the same item is played again (default: 0)
 
 In the example, media from the first collection will be played about twice as often as media from the second collection. There will be at least three other items between items from the second collection, and at least ten between two instances of the same item.
 

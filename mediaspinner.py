@@ -9,7 +9,6 @@ import sys
 import urllib.parse
 
 SELECT_MAX_ATTEMPTS = 10
-HISTORY_SIZE = 10
 HTTP_SERVER_PORT = 8000
 MEDIA_READ_SIZE = 4096
 INDEX_PAGE = """<!DOCTYPE html>
@@ -64,6 +63,7 @@ class MediaSelector:
         self._history = []
         self._collections = collections
         self._config = config
+        self._history_size = self._get_max_backoff()
 
     def select_media(self):
         for _ in range(SELECT_MAX_ATTEMPTS):
@@ -83,9 +83,14 @@ class MediaSelector:
             break
 
         self._history.insert(0, media)
-        if len(self._history) > HISTORY_SIZE:
-            del self._history[HISTORY_SIZE:]
+        if len(self._history) > self._history_size:
+            del self._history[self._history_size:]
         return media.path
+
+    def _get_max_backoff(self):
+        same_media_backoff = self._config.get("same_media_backoff", None) or 0
+        max_collection_backoff = max(x.get("backoff", None) or 0 for x in self._config["collections"].values())
+        return max(0, same_media_backoff, max_collection_backoff)
 
     def _get_random_media(self):
         collection_items = list(self._config["collections"].items())
