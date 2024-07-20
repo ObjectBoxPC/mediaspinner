@@ -10,7 +10,6 @@ import urllib.parse
 
 SELECT_MAX_ATTEMPTS = 10
 HTTP_SERVER_PORT = 8000
-MEDIA_READ_SIZE = 4096
 INDEX_PAGE = """<!DOCTYPE html>
 <html>
     <head>
@@ -32,7 +31,7 @@ INDEX_PAGE = """<!DOCTYPE html>
         </div>
         <p>Note: You may need to click to play the first time; afterwards playback should happen automatically.</p>
         <script>
-        (function (document, XMLHttpRequest, JSON, encodeURIComponent) {
+        (function (document, XMLHttpRequest, JSON, encodeURI) {
             var player = document.getElementById('player');
             var skipButton = document.getElementById('skip');
             function getNext() {
@@ -40,7 +39,7 @@ INDEX_PAGE = """<!DOCTYPE html>
                 xhr.open('POST', '/playlist/next');
                 xhr.addEventListener('load', function () {
                     var responseObj = JSON.parse(xhr.responseText);
-                    player.src = '/media?path=' + encodeURIComponent(responseObj.path);
+                    player.src = encodeURI(responseObj.path);
                     player.play();
                 });
                 xhr.send();
@@ -48,7 +47,7 @@ INDEX_PAGE = """<!DOCTYPE html>
             player.addEventListener('ended', getNext);
             skipButton.addEventListener('click', getNext);
             getNext();
-        })(document, XMLHttpRequest, JSON, encodeURIComponent);
+        })(document, XMLHttpRequest, JSON, encodeURI);
         </script>
     </body>
 </html>"""
@@ -101,12 +100,12 @@ class MediaSelector:
         path = random.choice(self._collections[collection])
         return MediaRecord(collection, path)
 
-class RequestHandler(http.server.BaseHTTPRequestHandler):
+class RequestHandler(http.server.SimpleHTTPRequestHandler):
     server_version = "MediaSpinner"
     protocol_version = "HTTP/1.1"
 
     def __init__(self, request, client_address, server):
-        super().__init__(request, client_address, server)
+        super().__init__(request, client_address, server, directory=server.media_base_dir)
 
     def do_GET(self):
         path, query_str = self._split_path()
@@ -115,35 +114,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             self._send_simple_response(http.HTTPStatus.OK, "text/html", INDEX_PAGE)
             return
 
-        if path == "/media":
-            query = urllib.parse.parse_qs(query_str)
-            if "path" not in query:
-                self._send_simple_response(http.HTTPStatus.BAD_REQUEST, "application/octet-stream", b"")
-                return
-
-            media_path = pathlib.Path(self.server.media_base_dir, query["path"][0])
-            if not media_path.is_file():
-                self._send_simple_response(http.HTTPStatus.NOT_FOUND, "application/octet-stream", b"")
-                return
-
-            try:
-                media_stat = media_path.stat()
-                with media_path.open("rb") as media_file:
-                    self.send_response(http.HTTPStatus.OK)
-                    # TODO: Maybe try to guess the actual type
-                    self.send_header("Content-Type", "application/octet-stream")
-                    self.send_header("Content-Length", media_stat.st_size)
-                    self.end_headers()
-                    media_data = media_file.read(MEDIA_READ_SIZE)
-                    while len(media_data) > 0:
-                        self.wfile.write(media_data)
-                        media_data = media_file.read(MEDIA_READ_SIZE)
-            except Exception as e:
-                self._send_simple_response(http.HTTPStatus.INTERNAL_SERVER_ERROR, "application/octet-stream", b"")
-                raise
-            return
-
-        self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
+        super().do_GET()
 
     def do_POST(self):
         path, query_str = self._split_path()
