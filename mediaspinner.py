@@ -6,7 +6,6 @@ import json
 import pathlib
 import random
 import sys
-import urllib.parse
 
 SELECT_MAX_ATTEMPTS = 10
 HTTP_SERVER_PORT = 8000
@@ -108,28 +107,20 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         super().__init__(request, client_address, server, directory=server.media_base_dir)
 
     def do_GET(self):
-        path, query_str = self._split_path()
-
-        if path == "/":
+        if self.path == "/":
             self._send_simple_response(http.HTTPStatus.OK, "text/html", INDEX_PAGE)
             return
 
         super().do_GET()
 
     def do_POST(self):
-        path, query_str = self._split_path()
-
-        if path == "/playlist/next":
+        if self.path == "/playlist/next":
             next_media = self.server.media_selector.select_media()
             response_obj = { "path": next_media }
             self._send_simple_response(http.HTTPStatus.OK, "application/json", json.dumps(response_obj))
             return
 
         self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
-
-    def _split_path(self):
-        parse_result = urllib.parse.urlparse(self.path)
-        return (parse_result.path, parse_result.query)
 
     def _send_simple_response(self, code, content_type, body):
         self.send_response(code)
