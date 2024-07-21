@@ -49,7 +49,7 @@ INDEX_PAGE = """<!DOCTYPE html>
         })(document, XMLHttpRequest, JSON, encodeURI);
         </script>
     </body>
-</html>"""
+</html>""".encode()
 
 class MediaRecord:
     def __init__(self, collection, path):
@@ -125,8 +125,6 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
     def _send_simple_response(self, code, content_type, body):
         self.send_response(code)
         self.send_header("Content-Type", content_type)
-        if type(body) is str:
-            body = body.encode("utf-8")
         self.send_header("Content-Length", len(body))
         self.end_headers()
         self.wfile.write(body)
