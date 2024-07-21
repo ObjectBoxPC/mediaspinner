@@ -117,10 +117,10 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == "/playlist/next":
             next_media = self.server.media_selector.select_media()
             response_obj = { "path": next_media }
-            self._send_simple_response(http.HTTPStatus.OK, "application/json", json.dumps(response_obj))
+            self._send_json_response(http.HTTPStatus.OK, response_obj)
             return
 
-        self._send_simple_response(http.HTTPStatus.NOT_FOUND, "text/plain", "Not found")
+        self._send_json_response(http.HTTPStatus.NOT_FOUND, { "error": "Not found" })
 
     def _send_simple_response(self, code, content_type, body):
         self.send_response(code)
@@ -130,6 +130,9 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-Length", len(body))
         self.end_headers()
         self.wfile.write(body)
+
+    def _send_json_response(self, code, data):
+        self._send_simple_response(code, "application/json", json.dumps(data).encode())
 
 class Server(http.server.ThreadingHTTPServer):
     def __init__(self, media_base_dir, media_selector):
