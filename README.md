@@ -79,7 +79,7 @@ Example:
 }
 ```
 
-### GET /media?path={path}
+### GET /{path}
 
 Retrieve a media file.
 
