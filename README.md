@@ -6,8 +6,7 @@ It takes a folder of media along with a configuration file, and allows for playb
 
 ## Requirements
 
-* Python 3.7
-* TCP port 8000 available on system (can be adjusted by editing the script)
+This script requires Python 3.7. No external libraries are required.
 
 ## Setup
 
@@ -55,9 +54,11 @@ In the example, media from the first collection will be played about twice as of
 
 ## Usage
 
-Start the Web server with: `python3 mediaspinner.py [configuration file] [media folder]`
+Start the Web server with: `python3 mediaspinner.py {configuration file} {media folder}`
 
 Load the Web page by opening: `http://localhost:8000/`
+
+The server listens on port 8000 by default, but a different port can be provided as a third argument.
 
 ## API
 

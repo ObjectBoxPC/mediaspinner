@@ -8,7 +8,7 @@ import random
 import sys
 
 SELECT_MAX_ATTEMPTS = 10
-HTTP_SERVER_PORT = 8000
+DEFAULT_PORT = 8000
 INDEX_PAGE = """<!DOCTYPE html>
 <html>
     <head>
@@ -133,8 +133,8 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         self._send_simple_response(code, "application/json", json.dumps(data).encode())
 
 class Server(http.server.ThreadingHTTPServer):
-    def __init__(self, media_base_dir, media_selector):
-        super().__init__(("localhost", HTTP_SERVER_PORT), RequestHandler)
+    def __init__(self, port, media_base_dir, media_selector):
+        super().__init__(("localhost", port), RequestHandler)
         self.media_base_dir = media_base_dir
         self.media_selector = media_selector
 
@@ -148,17 +148,19 @@ def load_config(config_path):
         return json.load(config_file)
 
 if len(sys.argv) < 3:
-    print("Usage: {} [config file] [collections folder]".format(sys.argv[0]))
+    print("Usage: {} {{config file}} {{collections folder}} [port]".format(sys.argv[0]))
     sys.exit(1)
 
-config_path, collections_dir = sys.argv[1:3]
+args = sys.argv + [None] * (4 - len(sys.argv))
+config_path, collections_dir, port = args[1:4]
 collections = load_collections(collections_dir)
 config = load_config(config_path)
 media_selector = MediaSelector(collections, config)
-server = Server(collections_dir, media_selector)
+port = int(port) if port else DEFAULT_PORT
+server = Server(port, collections_dir, media_selector)
 
 try:
-    print("Starting server...open http://localhost:{}/".format(HTTP_SERVER_PORT))
+    print("Starting server...open http://localhost:{}/".format(port))
     server.serve_forever()
 except KeyboardInterrupt:
     print("Exiting")
