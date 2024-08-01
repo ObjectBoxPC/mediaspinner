@@ -9,7 +9,7 @@ import sys
 
 SELECT_MAX_ATTEMPTS = 10
 DEFAULT_PORT = 8000
-INDEX_PAGE = """<!DOCTYPE html>
+INDEX_PAGE = b"""<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8"/>
@@ -49,7 +49,7 @@ INDEX_PAGE = """<!DOCTYPE html>
         })(document, XMLHttpRequest, JSON, encodeURI);
         </script>
     </body>
-</html>""".encode()
+</html>"""
 
 class MediaRecord:
     def __init__(self, collection, path):
