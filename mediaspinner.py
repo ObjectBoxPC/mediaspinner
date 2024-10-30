@@ -30,23 +30,29 @@ INDEX_PAGE = b"""<!DOCTYPE html>
         </div>
         <p>Note: You may need to click to play the first time; afterwards playback should happen automatically.</p>
         <script>
-        (function (document, XMLHttpRequest, JSON, encodeURI) {
+        (function (document, XMLHttpRequest, JSON, encodeURIComponent) {
             var player = document.getElementById('player');
             var skipButton = document.getElementById('skip');
+
             function getNext() {
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', '/playlist/next');
                 xhr.addEventListener('load', function () {
                     var responseObj = JSON.parse(xhr.responseText);
-                    player.src = encodeURI(responseObj.path);
+                    player.src = encodeFilePath(responseObj.path);
                     player.play();
                 });
                 xhr.send();
             }
+
+            function encodeFilePath(path) {
+                return encodeURIComponent(path).replace(/%2F/g, '/');
+            }
+
             player.addEventListener('ended', getNext);
             skipButton.addEventListener('click', getNext);
             getNext();
-        })(document, XMLHttpRequest, JSON, encodeURI);
+        })(document, XMLHttpRequest, JSON, encodeURIComponent);
         </script>
     </body>
 </html>"""
