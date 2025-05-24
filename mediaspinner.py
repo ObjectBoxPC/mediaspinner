@@ -2,6 +2,7 @@
 
 import http
 import http.server
+import itertools
 import json
 import pathlib
 import random
@@ -74,16 +75,10 @@ class MediaSelector:
             media = self._get_random_media()
 
             same_media_backoff = self._config.get("same_media_backoff", None) or 0
-            if same_media_backoff > 0:
-                same_media_backoff_hist = self._history[:same_media_backoff]
-                if any(media.path == h.path for h in same_media_backoff_hist):
-                    continue
-
             collection_backoff = self._config["collections"].get(media.collection, {}).get("backoff", None) or 0
-            if collection_backoff > 0:
-                collection_backoff_hist = self._history[:collection_backoff]
-                if any(media.collection == h.collection for h in collection_backoff_hist):
-                    continue
+            if self._should_backoff(lambda h: media.path == h.path, same_media_backoff) \
+                or self._should_backoff(lambda h: media.collection == h.collection, collection_backoff):
+                continue
             break
 
         self._history.insert(0, media)
@@ -104,6 +99,13 @@ class MediaSelector:
         )[0]
         path = random.choice(self._collections[collection])
         return MediaRecord(collection, path)
+
+    def _should_backoff(self, check, count):
+        if count > 0:
+            backoff_hist = itertools.islice(self._history, count)
+            return any(check(h) for h in backoff_hist)
+        else:
+            return False
 
 class RequestHandler(http.server.SimpleHTTPRequestHandler):
     server_version = "MediaSpinner"
