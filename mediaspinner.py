@@ -18,9 +18,14 @@ INDEX_PAGE = b"""<!DOCTYPE html>
         <style>
         html, body {
             height: 100%;
+            font-family: sans-serif;
         }
         #player {
             height: 75%;
+        }
+        button {
+            font-size: 1.5em;
+            margin: 0.25em;
         }
         </style>
     </head>
