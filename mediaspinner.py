@@ -79,12 +79,16 @@ INDEX_PAGE = b"""<!DOCTYPE html>
             skipButton.addEventListener('click', getNext);
             fullscreenButton.addEventListener('click', toggleFullscreen);
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'p') {
+                switch (e.key) {
+                case 'p':
                     playPause();
-                } else if (e.key === 's') {
+                    break;
+                case 's':
                     getNext();
-                } else if (e.key === 'f') {
+                    break;
+                case 'f':
                     toggleFullscreen();
+                    break;
                 }
             });
             getNext();
