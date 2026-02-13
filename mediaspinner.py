@@ -32,13 +32,17 @@ INDEX_PAGE = b"""<!DOCTYPE html>
     <body>
         <video controls="controls" id="player"></video>
         <div>
-            <button id="skip">Skip</button>
+            <button id="playpause">Play/Pause (P)</button>
+            <button id="skip">Skip (S)</button>
+            <button id="fullscreen">Fullscreen (F)</button>
         </div>
         <p>Note: You may need to click to play the first time; afterwards playback should happen automatically.</p>
         <script>
         (function (document, XMLHttpRequest, JSON, encodeURIComponent) {
             var player = document.getElementById('player');
+            var playPauseButton = document.getElementById('playpause');
             var skipButton = document.getElementById('skip');
+            var fullscreenButton = document.getElementById('fullscreen');
 
             function getNext() {
                 var xhr = new XMLHttpRequest();
@@ -55,8 +59,34 @@ INDEX_PAGE = b"""<!DOCTYPE html>
                 return encodeURIComponent(path).replace(/%2F/g, '/');
             }
 
+            function playPause() {
+                if (player.paused) {
+                    player.play();
+                } else {
+                    player.pause();
+                }
+            }
+
+            function toggleFullscreen() {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    player.requestFullscreen();
+                }
+            }
+
             player.addEventListener('ended', getNext);
             skipButton.addEventListener('click', getNext);
+            fullscreenButton.addEventListener('click', toggleFullscreen);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'p') {
+                    playPause();
+                } else if (e.key === 's') {
+                    getNext();
+                } else if (e.key === 'f') {
+                    toggleFullscreen();
+                }
+            });
             getNext();
         })(document, XMLHttpRequest, JSON, encodeURIComponent);
         </script>
