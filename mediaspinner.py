@@ -76,6 +76,7 @@ INDEX_PAGE = b"""<!DOCTYPE html>
             }
 
             player.addEventListener('ended', getNext);
+            playPauseButton.addEventListener('click', playPause);
             skipButton.addEventListener('click', getNext);
             fullscreenButton.addEventListener('click', toggleFullscreen);
             document.addEventListener('keydown', function (e) {
